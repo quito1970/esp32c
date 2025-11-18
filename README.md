@@ -164,5 +164,3 @@ Desenvolvido por:
 Este projeto é destinado exclusivamente a fins educacionais.
 Auditar ou interferir em redes sem permissão é crime.
 Use com responsabilidade.
-
-```
