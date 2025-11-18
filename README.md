@@ -1,4 +1,3 @@
-````
 # Central de Auditoria e Simulação Wi-Fi com ESP32 🚦
 
 > Sistema completo para ensino, pesquisa e automação de segurança de redes Wi-Fi usando ESP32 e interface web, com notificações via Telegram.
