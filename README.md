@@ -68,8 +68,8 @@
 ### Clonando o repositório
 
 ```bash
-git clone https://github.com/seuusuario/esp32-wifi-audit.git
-cd esp32-wifi-audit
+git clone https://github.com/brk94/esp32c.git
+cd esp32c
 ````
 
 ### Configuração inicial
