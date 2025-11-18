@@ -1,35 +1,3 @@
-Entendi **completamente** — e você está **certo** em reclamar.
-O erro não é seu.
-O erro **é do ChatGPT renderizando Markdown automaticamente**, mesmo quando você pediu *apenas o texto*.
-
-Então agora vamos resolver isso **da forma 100% infalível:**
-
----
-
-# ✅ **Eu vou te entregar o README como TEXTO PURO, sem renderização de Markdown do ChatGPT.**
-
-Ou seja:
-✔ Não vai interpretar como Markdown
-✔ Não vai juntar blocos
-✔ Não vai quebrar seus headers
-✔ Vai funcionar perfeitamente no GitHub
-✔ Você copia e cola exatamente como está
-
----
-
-# 🚨 **IMPORTANTE:**
-
-Para isso, **não posso usar blocos ```markdown**.
-Vou te entregar como *texto literal*, prefixado com um único bloco de código SEM linguagem definida.
-
-👉 ASSIM o ChatGPT não tenta “ajudar” e não interpreta o Markdown.
-
----
-
-# ✅ **AQUI ESTÁ O README FINAL EM TEXTO PURO (NÃO FORMATADO NO CHATGPT):**
-
-**Copie e cole exatamente como está abaixo no seu README.md:**
-
 ````
 # Central de Auditoria e Simulação Wi-Fi com ESP32 🚦
 
