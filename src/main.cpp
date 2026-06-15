@@ -568,7 +568,6 @@ void handleRoot() {
         "<a href='/csvscan' class='btn'>CSV redes</a>"
         "<a href='/csvclients' class='btn'>CSV clientes</a>"
         "<a href='/bruteforce' class='btn'>Brute Force</a>"
-        "<a href='/evil' class='btn' style='background:#db3a2f'>Modo Portal Falso</a>"
         "</div>"
         "<div class='main'>"
         "<div style='margin-bottom:17px;font-size:93%;color:#294;'>"
