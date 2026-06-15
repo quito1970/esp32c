@@ -25,9 +25,6 @@
 - **Auditoria Wi-Fi:**  
   Varredura automática de até 50 redes próximas, identificando SSIDs duplicados (Evil Twin).
 
-- **Portal Falso:**  
-  Captura tentativas de senha em um ambiente simulado para fins educacionais.
-
 - **Brute Force Educacional:**  
   Teste de força bruta com dicionário fixo e dinâmico, projetado exclusivamente para redes de teste.  
   Resultados exibidos na interface e enviados ao Telegram.
@@ -37,9 +34,6 @@
 
 - **Exportação / Relatórios:**  
   Geração de relatórios TXT/CSV e opção de integração via API REST.
-
-- **Notificações via Telegram:**  
-  Envio automático de alertas críticos utilizando um bot configurável.
 
 - **Configuração Wi-Fi via WiFiManager:**  
   Interface protegida para configurar SSID, senha e resetar o ESP32.
