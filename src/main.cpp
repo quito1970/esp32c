@@ -7,19 +7,7 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-Adafruit_SSD1306 display(
-    SCREEN_WIDTH,
-    SCREEN_HEIGHT,
-    &Wire,
-    -1
-);
 
 #define MAX_NETWORKS 50
 #define MAX_AP_CLIENTS 16
@@ -621,21 +609,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("=== Auditoria WiFi ESP32 ===");
 
-    // OLED
-    Wire.begin(21, 22);
 
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) {
-        Serial.println("Falha ao iniciar OLED");
-    }
-
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-
-    display.setCursor(0, 0);
-    display.println("ESP32 Auditoria");
-    display.println("Inicializando...");
-    display.display();
 
     secured_client.setInsecure();
 
@@ -643,37 +617,17 @@ void setup() {
     //wifiManager.resetSettings();
     wifiManager.setSaveConfigCallback(saveConfigCallback);
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Conectando WiFi...");
-    display.println("Aguarde");
-    display.display();
+
 
     if (!wifiManager.autoConnect("Auditoria_Grupo_AJP")) {
 
-        display.clearDisplay();
-        display.setCursor(0, 0);
-        display.println("Falha WiFi");
-        display.println("Reiniciando...");
-        display.display();
-
-        Serial.println("Falha ao conectar e tempo limite atingido.");
-        delay(3000);
+     
         ESP.restart();
     }
 
     Serial.print("IP (STA): ");
     Serial.println(WiFi.localIP());
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("WiFi Conectado");
-    display.println("");
-
-    display.print("IP:");
-    display.println(WiFi.localIP());
-
-    display.display();
 
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP("Auditoria_Grupo_AJP", "");
@@ -723,18 +677,7 @@ void setup() {
 
     server.begin();
 
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Servidor ON");
-    display.println("");
-
-    display.print("Redes: ");
-    display.println(networkCount);
-
-    display.print("IP:");
-    display.println(WiFi.localIP());
-
-    display.display();
+  
 }
 
 void loop() {
@@ -760,31 +703,5 @@ void loop() {
     // Atualiza OLED a cada 3 segundos
     if (millis() - lcdUpdate > 3000) {
 
-        display.clearDisplay();
-
-        display.setTextSize(1);
-        display.setCursor(0, 0);
-
-        display.println("AUDITORIA WIFI");
-
-        display.print("Redes: ");
-        display.println(networkCount);
-
-        display.print("Clientes: ");
-        display.println(ap_client_count);
-
-        display.print("Modo: ");
-        display.println(
-            modoAtual == AUDITORIA ?
-            "AUDITORIA" :
-            "PORTAL"
-        );
-
-        display.print("IP:");
-        display.println(WiFi.localIP());
-
-        display.display();
-
-        lcdUpdate = millis();
     }
 }

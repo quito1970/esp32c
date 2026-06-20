@@ -129,7 +129,6 @@ Adicione capturas de tela das principais interfaces:
 
 * Tela de Login
 * Dashboard
-* Portal Falso
 * Brute Force
 * Monitoramento
 * Exportação
@@ -137,24 +136,14 @@ Adicione capturas de tela das principais interfaces:
 
 ---
 
-## 📄 Licença
-
-MIT, GPL ou outra licença aberta.
-
----
-
 ## ✨ Créditos
 
 Desenvolvido por:
 
-* André Coelho
-* João Victor Garmatz
-* Paulo Eduardo (2025)
+* Daniel Alves
+* Pedro Pereira
+* Carlos Alberto
 
 ---
 
-## ⚠️ Aviso legal
 
-Este projeto é destinado exclusivamente a fins educacionais.
-Auditar ou interferir em redes sem permissão é crime.
-Use com responsabilidade.
